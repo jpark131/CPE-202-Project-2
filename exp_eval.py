@@ -51,7 +51,7 @@ def postfix_eval(input_str):
                     raise PostfixFormatException('Illegal bit shift operand')
                 result = n1 >> n2
                 s.push(result)
-        elif char[0] in nums:
+        elif char[0] in nums or (char[0] == '-' and len(char) > 1):
             if '.' not in char:
                 s.push(int(char))
             else:
@@ -79,9 +79,9 @@ def infix_to_postfix(input_str):
     low = ['+','-']
     nums = ['1','2','3','4','5','6','7','8','9','0']
     for char in tokens:
-        if post == '' and char[0] in nums:
+        if post == '' and (char[0] in nums or (char[0] == '-' and len(char) > 1)):
             post += char
-        elif char[0] in nums:
+        elif char[0] in nums or (char[0] == '-' and len(char) > 1):
             post += ' ' + char
         elif char == '(':
             s.push(char)
@@ -134,7 +134,7 @@ def prefix_to_postfix(input_str):
     nums = ['1','2','3','4','5','6','7','8','9','0']
     while i >= 0:
         char = tokens[i]
-        if char[0] in nums:
+        if char[0] in nums or (char[0] == '-' and len(char) > 1):
             s.push(char)
             i -= 1
         elif char in operators:
