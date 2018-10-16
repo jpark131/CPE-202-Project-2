@@ -15,10 +15,8 @@ def postfix_eval(input_str):
     Raises an PostfixFormatException if the input is not well-formed"""
     s = Stack(30)
     tokens = input_str.split( )
-    result = ''
     operators = ['+', '-', '*', '/', '**', '<<', '>>']
     nums = ['1','2','3','4','5','6','7','8','9','0']
-    i = 0
     for char in tokens:
         if char in operators:
             try:
@@ -72,7 +70,6 @@ def infix_to_postfix(input_str):
     space separated.  Tokens are either operators + - * / ^ parentheses ( ) or numbers
     Returns a String containing a postfix expression """
     s = Stack(30)
-    i = 0
     post = ''
     tokens = input_str.split( )
     operators = ['+','-','*','/','^','<<','>>','**','**']
@@ -131,46 +128,19 @@ def prefix_to_postfix(input_str):
     space separated.  Tokens are either operators + - * / ^ parentheses ( ) or numbers
     Returns a String containing a postfix expression(tokens are space separated)"""
     s = Stack(30)
-    i = len(input_str) - 1
-    inf = ''
-    operators = ['+','-','*','/','<','>','**','**']
-    highest = ['<','>']
-    high = ['**']
-    medium = ['*','/']
-    low = ['+','-']
+    tokens = input_str.split( )
+    i = len(tokens) - 1
+    operators = ['+','-','*','/','<<','>>','**']
     nums = ['1','2','3','4','5','6','7','8','9','0']
     while i >= 0:
-        char = input_str[i]
-        if char == ' ':
-            i -= 1
-        elif char in nums:
+        char = tokens[i]
+        if char[0] in nums:
             s.push(char)
             i -= 1
         elif char in operators:
-            if char == '*':
-                if i > 0:
-                    if input_str[i - 1] == '*':
-                        op1 = s.pop()
-                        op2 = s.pop()
-                        inf = op1 + ' ' + op2 + ' ' + '**'
-                        s.push(inf)
-                        i -= 2
-                else:
-                    op1 = s.pop()
-                    op2 = s.pop()
-                    inf = op1 + ' ' + op2 + ' ' + char
-                    s.push(inf)
-                    i -= 1
-            elif char == '<' or char == '>':
-                op1 = s.pop()
-                op2 = s.pop()
-                inf = op1 + ' ' + op2 + ' ' + input_str[i-1] + char
-                s.push(inf)
-                i -= 2
-            else:
-                op1 = s.pop()
-                op2 = s.pop()
-                inf = op1 + ' ' + op2 + ' ' + char
-                s.push(inf)
-                i -= 1
+            op1 = s.pop()
+            op2 = s.pop()
+            inf = op1 + ' ' + op2 + ' ' + char
+            s.push(inf)
+            i -= 1
     return s.pop()
