@@ -13,6 +13,22 @@ class test_expressions(unittest.TestCase):
         self.assertAlmostEqual(postfix_eval('2 1 <<'), 4)
         self.assertAlmostEqual(postfix_eval('2 1 >>'), 1)
 
+    def test_postfix_eval_floats(self):
+        self.assertAlmostEqual(postfix_eval("3.0 5.0 +"), 8.0)
+        self.assertAlmostEqual(postfix_eval("3.0 2.0 -"), 1.0)
+        self.assertAlmostEqual(postfix_eval("3.0 5.0 *"), 15.0)
+        self.assertAlmostEqual(postfix_eval("3.0 2.0 **"), 9.0)
+        self.assertAlmostEqual(postfix_eval("3.0 1.0 /"), 3.0)
+        with self.assertRaises(ValueError):
+            postfix_eval('3.0 0.0 /')
+        with self.assertRaises(PostfixFormatException):
+            postfix_eval('3.0 1 <<')
+        with self.assertRaises(PostfixFormatException):
+            postfix_eval('3.0 1 >>')
+        with self.assertRaises(PostfixFormatException):
+            postfix_eval('3 1.0 <<')
+        with self.assertRaises(PostfixFormatException):
+            postfix_eval('3 1.0 >>')
 
     def test_postfix_eval_invalid_token(self):
         try:
@@ -57,10 +73,20 @@ class test_expressions(unittest.TestCase):
         self.assertEqual(infix_to_postfix("6 - 3"), "6 3 -")
         self.assertEqual(infix_to_postfix("6"), "6")
         self.assertEqual(infix_to_postfix('3 + 4 * 2 / ( 1 - 5 ) ** 2 ** 3'), '3 4 2 * 1 5 - 2 3 ** ** / +')
+        self.assertEqual(infix_to_postfix('3 << 4'), '3 4 <<')
+        self.assertEqual(infix_to_postfix('3 >> 4'), '3 4 >>')
+        self.assertEqual(infix_to_postfix('2 << 3 << 4'), '2 3 << 4 <<')
+        self.assertEqual(infix_to_postfix('1 << 2 << 3 >> 4'), '1 2 << 3 << 4 >>')
+        self.assertEqual(infix_to_postfix('1 >> 2 ** 2'), '1 2 >> 2 **')
+        self.assertEqual(infix_to_postfix('1 ** 2'), '1 2 **')
+        self.assertEqual(infix_to_postfix('1 + 1 + 1 + 1'), '1 1 + 1 + 1 +')
+        self.assertEqual(infix_to_postfix('1 * 1 * 1'), '1 1 * 1 *')
+
 
     def test_prefix_to_postfix(self):
         self.assertEqual(prefix_to_postfix("* - 3 / 2 1 - / 4 5 6"), "3 2 1 / - 4 5 / 6 - *")
         self.assertEqual(prefix_to_postfix('+ << 3 4 >> 5 6'), '3 4 << 5 6 >> +')
+        self.assertEqual(prefix_to_postfix('** 1 2'), '1 2 **')
 
 if __name__ == "__main__":
     unittest.main()

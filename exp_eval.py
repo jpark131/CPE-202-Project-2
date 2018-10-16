@@ -70,68 +70,116 @@ def postfix_eval(input_str):
                 token = ''
             i += 1
         elif char == '+':
-                i2 = int(s.pop())
-                i1 = int(s.pop())
-                res = str(i1 + i2)
-                s.push(res)
-                token = ''
-                i += 1
+            p2 = s.pop()
+            p1 = s.pop()
+            if '.' in p2:
+                i2 = float(p2)
+            else:
+                i2 = int(p2)
+            if '.' in p1:
+                i1 = float(p1)
+            else:
+                i1 = int(p1)
+            res = str(i1 + i2)
+            s.push(res)
+            token = ''
+            i += 1
         elif char == '-':
-            i2 = int(s.pop())
-            i1 = int(s.pop())
+            p2 = s.pop()
+            p1 = s.pop()
+            if '.' in p2:
+                i2 = float(p2)
+            else:
+                i2 = int(p2)
+            if '.' in p1:
+                i1 = float(p1)
+            else:
+                i1 = int(p1)
             res = str(i1 - i2)
             s.push(res)
             token = ''
             i += 1
         elif char == '*':
+            p2 = s.pop()
+            p1 = s.pop()
             if i < len(input_str) - 1:
                 if input_str[i + 1] == '*':
-                    i2 = int(s.pop())
-                    i1 = int(s.pop())
+                    if '.' in p2:
+                        i2 = float(p2)
+                    else:
+                        i2 = int(p2)
+                    if '.' in p1:
+                        i1 = float(p1)
+                    else:
+                        i1 = int(p1)
                     res = str(i1 ** i2)
                     s.push(res)
                     token = ''
                     i += 2
             else:
-                i2 = int(s.pop())
-                i1 = int(s.pop())
+                if '.' in p2:
+                    i2 = float(p2)
+                else:
+                    i2 = int(p2)
+                if '.' in p1:
+                    i1 = float(p1)
+                else:
+                    i1 = int(p1)
                 res = str(i1 * i2)
                 s.push(res)
                 token = ''
                 i += 2
         elif char == '/':
-            i2 = int(s.pop())
-            if i2 == 0:
-                raise ValueError('Cannot divide by 0!')
-            i1 = int(s.pop())
+            p2 = s.pop()
+            p1 = s.pop()
+            if '.' in p2:
+                i2 = float(p2)
+                if i2 == 0:
+                    raise ValueError('Cannot divide by 0!')
+            else:
+                i2 = int(p2)
+                if i2 == 0:
+                    raise ValueError('Cannot divide by 0!')
+            if '.' in p1:
+                i1 = float(p1)
+            else:
+                i1 = int(p1)
             res = str(i1 / i2)
             s.push(res)
             token = ''
             i += 1
         elif char == '<':
+            p2 = s.pop()
+            p1 = s.pop()
             if input_str[i + 1] == '<':
-                try:
-                    i2 = int(s.pop())
-                    i1 = int(s.pop())
+                if '.' in p2:
+                    raise PostfixFormatException('Invalid bit shift operand')
+                else:
+                    i2 = int(p2)
+                if '.' in p1:
+                    raise PostfixFormatException('Invalid bit shift operand')
+                else:
+                    i1 = int(p1)
                     res = str(i1 << i2)
                     s.push(res)
                     token = ''
                     i += 2
-                except ValueError:
-                    raise PostfixFormatException('Invalid bit shift operand')
         elif char == '>':
+            p2 = s.pop()
+            p1 = s.pop()
             if input_str[i + 1] == '>':
-                try:
-                    i2 = int(s.pop())
-                    i1 = int(s.pop())
-                    res = str(i1 >> i2)
-                    s.push(res)
-                    token = ''
-                    i += 2
-                except ValueError:
+                if '.' in p2:
                     raise PostfixFormatException('Invalid bit shift operand')
-            else:
-                raise PostfixFormatException('Invalid token')
+                else:
+                    i2 = int(p2)
+                if '.' in p1:
+                    raise PostfixFormatException('Invalid bit shift operand')
+                else:
+                    i1 = int(p1)
+                res = str(i1 >> i2)
+                s.push(res)
+                token = ''
+                i += 2
         elif char == '.':
             token += char
             i += 1
@@ -142,7 +190,7 @@ def postfix_eval(input_str):
         pop = s.pop()
         result = int(pop)
     except ValueError:
-        result = float(pop())
+        result = float(pop)
     return result
 
 def infix_to_postfix(input_str):
@@ -173,34 +221,41 @@ def infix_to_postfix(input_str):
         elif char == '(':
             s.push(char)
             i += 1
+        elif s.is_empty() and char == '<':
+            s.push('<<')
+            i += 2
+        elif s.is_empty() and char == '>':
+            s.push('>>')
+            i += 2
+        elif s.is_empty() and char == '*' and input_str[i + 1] == '*':
+            s.push('**')
+            i += 2
         elif s.is_empty():
             s.push(char)
             i += 1
         elif char == ')':
             if s.peek() != '(':
-                while s.peek() != '(':
+                while s.peek() != '(' and not s.is_empty():
                     post += " " + s.pop()
             s.pop()
             i += 1
         elif char == '<':
-            if input_str[i + 1] == '<':
-                o2 = s.peek()
-                if o2 in highest:
-                    post += " " + s.pop()
-                s.push(char + input_str[i+1])
-                i += 2
+            o2 = s.peek()
+            if o2 in highest and not s.is_empty():
+                post += " " + s.pop()
+            s.push('<<')
+            i += 2
         elif char == '>':
-            if input_str[i + 1] == '>':
-                o2 = s.peek()
-                if o2 in highest:
-                    post += " " + s.pop()
-                s.push(char + input_str[i+1])
-                i += 2
+            o2 = s.peek()
+            if o2 in highest and not s.is_empty():
+                post += " " + s.pop()
+            s.push('>>')
+            i += 2
         elif char == '*':
             if input_str[i + 1] == '*':
                 o2 = s.peek()
                 if o2 in highest:
-                    post = " " + s.pop()
+                    post += " " + s.pop()
                 s.push('**')
                 i += 2
             else:
@@ -211,21 +266,19 @@ def infix_to_postfix(input_str):
                 i += 1
         elif char == '/':
             o2 = s.peek()
-            if o2 in highest or o2 in high or o2 in medium:
+            if o2 in highest or o2 in high or o2 in medium and not s.is_empty():
                 post += " " + s.pop()
             s.push(char)
             i += 1
         elif char in low:
             o2 = s.peek()
-            if o2 in highest or o2 in high or o2 in medium or o2 in low:
+            if o2 in highest or o2 in high or o2 in medium or o2 in low and not s.is_empty():
                 post += " " + s.pop()
             s.push(char)
             i += 1
     while not s.is_empty():
         post += " " + s.pop()
     return post
-
-
 
 def prefix_to_postfix(input_str):
     """Converts a prefix expression to an equivalent postfix expression"""
@@ -250,7 +303,7 @@ def prefix_to_postfix(input_str):
             i -= 1
         elif char in operators:
             if char == '*':
-                if i > 1:
+                if i > 0:
                     if input_str[i - 1] == '*':
                         op1 = s.pop()
                         op2 = s.pop()
@@ -276,5 +329,3 @@ def prefix_to_postfix(input_str):
                 s.push(inf)
                 i -= 1
     return s.pop()
-
-print(postfix_eval('3 1.0 >>'))
