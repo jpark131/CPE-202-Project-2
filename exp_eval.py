@@ -14,184 +14,56 @@ def postfix_eval(input_str):
     Returns the result of the expression evaluation. 
     Raises an PostfixFormatException if the input is not well-formed"""
     s = Stack(30)
-    token = ''
+    tokens = input_str.split()
+    result = ''
+    operators = ['+', '-', '*', '/', '**', '<<', '>>']
+    nums = ['1','2','3','4','5','6','7','8','9','0']
     i = 0
-    ib = 0
-    num_op = 0
-    num_num = 0
-    while ib < len(input_str):
-        char = input_str[ib]
-        if char == ' ':
-            ib += 1
-        elif char == '.':
-            ib += 1
-        elif char == '+' or char == '-' or char == '*' or char == '/' or char == '<' or char == '>':
-            if char == '*':
-                if ib < len(input_str) - 1:
-                    if input_str[ib + 1] == '*':
-                        num_op += 1
-                        ib += 2
-                else:
-                    num_op += 1
-                    ib += 1
-            elif char == '<' and ib < len(input_str) - 1:
-                if input_str[ib + 1] == '<':
-                    num_op += 1
-                    ib += 2
-            elif char == '>' and ib < len(input_str) - 1:
-                if input_str[ib + 1] == '>':
-                    num_op += 1
-                    ib += 2
-            else:
-                num_op += 1
-                ib += 1
-        else:
+    for char in tokens:
+        if char in operators:
             try:
-                int(char)
-                if ib == len(input_str) - 1:
-                    num_num += 1
-                    ib += 1
-                elif input_str[ib + 1] == ' ':
-                    num_num += 1
-                    ib += 1
-                elif input_str[ib + 1] == '.':
-                    ib += 1
-            except ValueError as e:
-                raise PostfixFormatException("Invalid token")
-    if num_op + 1 < num_num:
-        raise PostfixFormatException("Too many operands")
-    if num_op + 1 > num_num:
-        raise PostfixFormatException("Insufficient operands")
-    while i < len(input_str):
-        char = input_str[i]
-        if char == ' ':
-            if token is not '':
-                s.push(token)
-                token = ''
-            i += 1
-        elif char == '+':
-            p2 = s.pop()
-            p1 = s.pop()
-            if '.' in p2:
-                i2 = float(p2)
-            else:
-                i2 = int(p2)
-            if '.' in p1:
-                i1 = float(p1)
-            else:
-                i1 = int(p1)
-            res = str(i1 + i2)
-            s.push(res)
-            token = ''
-            i += 1
-        elif char == '-':
-            p2 = s.pop()
-            p1 = s.pop()
-            if '.' in p2:
-                i2 = float(p2)
-            else:
-                i2 = int(p2)
-            if '.' in p1:
-                i1 = float(p1)
-            else:
-                i1 = int(p1)
-            res = str(i1 - i2)
-            s.push(res)
-            token = ''
-            i += 1
-        elif char == '*':
-            p2 = s.pop()
-            p1 = s.pop()
-            if i < len(input_str) - 1:
-                if input_str[i + 1] == '*':
-                    if '.' in p2:
-                        i2 = float(p2)
-                    else:
-                        i2 = int(p2)
-                    if '.' in p1:
-                        i1 = float(p1)
-                    else:
-                        i1 = int(p1)
-                    res = str(i1 ** i2)
-                    s.push(res)
-                    token = ''
-                    i += 2
-            else:
-                if '.' in p2:
-                    i2 = float(p2)
-                else:
-                    i2 = int(p2)
-                if '.' in p1:
-                    i1 = float(p1)
-                else:
-                    i1 = int(p1)
-                res = str(i1 * i2)
-                s.push(res)
-                token = ''
-                i += 2
-        elif char == '/':
-            p2 = s.pop()
-            p1 = s.pop()
-            if '.' in p2:
-                i2 = float(p2)
-                if i2 == 0:
+                n2 = s.pop()
+                n1 = s.pop()
+            except IndexError:
+                raise PostfixFormatException('Insufficient operands')
+            if char == '+':
+                result = n1 + n2
+                s.push(result)
+            if char == '-':
+                result = n1 - n2
+                s.push(result)
+            if char == '*':
+                result = n1 * n2
+                s.push(result)
+            if char == '/':
+                if n2 == 0:
                     raise ValueError('Cannot divide by 0!')
+                result = n1 / n2
+                s.push(result)
+            if char == '**':
+                result = n1 ** n2
+                s.push(result)
+            if char == '<<':
+                if type(n1) == float or type(n2) == float:
+                    raise PostfixFormatException('Illegal bit shift operand')
+                result = n1 << n2
+                s.push(result)
+            if char == '>>':
+                if type(n1) == float or type(n2) == float:
+                    raise PostfixFormatException('Illegal bit shift operand')
+                result = n1 >> n2
+                s.push(result)
+        elif char[0] in nums:
+            if '.' not in char:
+                s.push(int(char))
             else:
-                i2 = int(p2)
-                if i2 == 0:
-                    raise ValueError('Cannot divide by 0!')
-            if '.' in p1:
-                i1 = float(p1)
-            else:
-                i1 = int(p1)
-            res = str(i1 / i2)
-            s.push(res)
-            token = ''
-            i += 1
-        elif char == '<':
-            p2 = s.pop()
-            p1 = s.pop()
-            if input_str[i + 1] == '<':
-                if '.' in p2:
-                    raise PostfixFormatException('Invalid bit shift operand')
-                else:
-                    i2 = int(p2)
-                if '.' in p1:
-                    raise PostfixFormatException('Invalid bit shift operand')
-                else:
-                    i1 = int(p1)
-                    res = str(i1 << i2)
-                    s.push(res)
-                    token = ''
-                    i += 2
-        elif char == '>':
-            p2 = s.pop()
-            p1 = s.pop()
-            if input_str[i + 1] == '>':
-                if '.' in p2:
-                    raise PostfixFormatException('Invalid bit shift operand')
-                else:
-                    i2 = int(p2)
-                if '.' in p1:
-                    raise PostfixFormatException('Invalid bit shift operand')
-                else:
-                    i1 = int(p1)
-                res = str(i1 >> i2)
-                s.push(res)
-                token = ''
-                i += 2
-        elif char == '.':
-            token += char
-            i += 1
-        elif int(char) is not ValueError:
-            token += char
-            i += 1
-    try:
-        pop = s.pop()
-        result = int(pop)
-    except ValueError:
-        result = float(pop)
-    return result
+                s.push(float(char))
+        else:
+            raise PostfixFormatException('Invalid token')
+    final = s.pop()
+    if not s.is_empty():
+        raise PostfixFormatException('Too many operands')
+    return final
 
 def infix_to_postfix(input_str):
     """Converts an infix expression to an equivalent postfix expression"""
