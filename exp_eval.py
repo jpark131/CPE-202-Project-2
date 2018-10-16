@@ -14,7 +14,7 @@ def postfix_eval(input_str):
     Returns the result of the expression evaluation. 
     Raises an PostfixFormatException if the input is not well-formed"""
     s = Stack(30)
-    tokens = input_str.split()
+    tokens = input_str.split( )
     result = ''
     operators = ['+', '-', '*', '/', '**', '<<', '>>']
     nums = ['1','2','3','4','5','6','7','8','9','0']
@@ -74,82 +74,55 @@ def infix_to_postfix(input_str):
     s = Stack(30)
     i = 0
     post = ''
+    tokens = input_str.split( )
     operators = ['+','-','*','/','^','<<','>>','**','**']
     highest = ['<<','>>']
     high = ['**']
     medium = ['*','/']
     low = ['+','-']
     nums = ['1','2','3','4','5','6','7','8','9','0']
-    while i < len(input_str):
-        char = input_str[i]
-        if char == ' ':
-            i += 1
-        elif post == '' and char in nums:
+    for char in tokens:
+        if post == '' and char[0] in nums:
             post += char
-            i += 1
-        elif char in nums:
+        elif char[0] in nums:
             post += ' ' + char
-            i += 1
         elif char == '(':
             s.push(char)
-            i += 1
-        elif s.is_empty() and char == '<':
-            s.push('<<')
-            i += 2
-        elif s.is_empty() and char == '>':
-            s.push('>>')
-            i += 2
-        elif s.is_empty() and char == '*' and input_str[i + 1] == '*':
-            s.push('**')
-            i += 2
-        elif s.is_empty():
-            s.push(char)
-            i += 1
-        elif char == ')':
-            if s.peek() != '(':
-                while s.peek() != '(' and not s.is_empty():
-                    post += " " + s.pop()
-            s.pop()
-            i += 1
-        elif char == '<':
-            o2 = s.peek()
-            if o2 in highest and not s.is_empty():
-                post += " " + s.pop()
-            s.push('<<')
-            i += 2
-        elif char == '>':
-            o2 = s.peek()
-            if o2 in highest and not s.is_empty():
-                post += " " + s.pop()
-            s.push('>>')
-            i += 2
-        elif char == '*':
-            if input_str[i + 1] == '*':
+        if char in operators:
+            if not s.is_empty():
                 o2 = s.peek()
-                if o2 in highest:
-                    post += " " + s.pop()
-                s.push('**')
-                i += 2
-            else:
-                o2 = s.peek()
-                if o2 in highest or o2 in high or o2 in medium:
-                    post += " " + s.pop()
-                s.push(char)
-                i += 1
-        elif char == '/':
+            if char in highest or char in high:
+                if s.is_empty() or o2 == '(':
+                    s.push(char)
+                else:
+                    while not s.is_empty() and o2 in highest:
+                        post += ' ' + s.pop()
+                    s.push(char)
+            if char in medium:
+                if s.is_empty() or o2 == '(':
+                    s.push(char)
+                else:
+                    while not s.is_empty() and o2 not in low:
+                        post += ' ' + s.pop()
+                        if not s.is_empty():
+                            o2 = s.peek()
+                    s.push(char)
+            if char in low:
+                if s.is_empty() or o2 == '(':
+                    s.push(char)
+                else:
+                    while not s.is_empty():
+                        post += ' ' + s.pop()
+                    s.push(char)
+        if char == ')':
             o2 = s.peek()
-            if o2 in highest or o2 in high or o2 in medium and not s.is_empty():
-                post += " " + s.pop()
-            s.push(char)
-            i += 1
-        elif char in low:
-            o2 = s.peek()
-            if o2 in highest or o2 in high or o2 in medium or o2 in low and not s.is_empty():
-                post += " " + s.pop()
-            s.push(char)
-            i += 1
+            while o2 != '(':
+                post += ' ' + s.pop()
+                if not s.is_empty():
+                        o2 = s.peek()
+                s.pop()
     while not s.is_empty():
-        post += " " + s.pop()
+        post += ' ' + s.pop()
     return post
 
 def prefix_to_postfix(input_str):
