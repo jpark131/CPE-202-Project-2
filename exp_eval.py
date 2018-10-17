@@ -129,6 +129,4 @@ def prefix_to_postfix(input_str):
             inf = op1 + ' ' + op2 + ' ' + char
             s.push(inf)
             i -= 1
-        else:
-            break
     return s.pop()
