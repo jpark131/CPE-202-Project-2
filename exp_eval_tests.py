@@ -104,5 +104,11 @@ class test_expressions(unittest.TestCase):
         self.assertEqual(prefix_to_postfix('+ << 3 4 >> 5 6'), '3 4 << 5 6 >> +')
         self.assertEqual(prefix_to_postfix('** -1 2'), '-1 2 **')
 
+    def test_infinite_loop(self):
+        with self.assertRaises(PostfixFormatException):
+            infix_to_postfix('e')
+        with self.assertRaises(PostfixFormatException):
+            prefix_to_postfix('e')
+
 if __name__ == "__main__":
     unittest.main()

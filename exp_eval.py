@@ -72,7 +72,7 @@ def infix_to_postfix(input_str):
     s = Stack(30)
     post = ''
     tokens = input_str.split( )
-    operators = ['+','-','*','/','^','<<','>>','**','**']
+    operators = ['+','-','*','/','**','<<','>>']
     highest = ['<<','>>']
     high = ['**']
     medium = ['*','/']
@@ -85,7 +85,7 @@ def infix_to_postfix(input_str):
             post += ' ' + char
         elif char == '(':
             s.push(char)
-        if char in operators:
+        elif char in operators:
             if not s.is_empty():
                 o2 = s.peek()
             if char in highest or char in high:
@@ -111,13 +111,15 @@ def infix_to_postfix(input_str):
                     while not s.is_empty():
                         post += ' ' + s.pop()
                     s.push(char)
-        if char == ')':
+        elif char == ')':
             o2 = s.peek()
             while o2 != '(':
                 post += ' ' + s.pop()
                 if not s.is_empty():
                         o2 = s.peek()
                 s.pop()
+        else:
+            raise PostfixFormatException('Infix infinite loop?')
     while not s.is_empty():
         post += ' ' + s.pop()
     return post
@@ -143,4 +145,6 @@ def prefix_to_postfix(input_str):
             inf = op1 + ' ' + op2 + ' ' + char
             s.push(inf)
             i -= 1
+        else:
+            raise PostfixFormatException('Prefix infinite loop?')
     return s.pop()
