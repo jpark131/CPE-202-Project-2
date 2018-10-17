@@ -72,11 +72,8 @@ def infix_to_postfix(input_str):
     s = Stack(30)
     post = ''
     tokens = input_str.split( )
+    op_prec = {'+': 1, '-': 1, '*': 2, '/': 2, '**': 3, '<<': 4, '>>': 4}
     operators = ['+','-','*','/','**','<<','>>']
-    highest = ['<<','>>']
-    high = ['**']
-    medium = ['*','/']
-    low = ['+','-']
     nums = ['1','2','3','4','5','6','7','8','9','0']
     for char in tokens:
         if post == '' and (char[0] in nums or (char[0] == '-' and len(char) > 1)):
@@ -88,38 +85,27 @@ def infix_to_postfix(input_str):
         elif char in operators:
             if not s.is_empty():
                 o2 = s.peek()
-            if char in highest or char in high:
-                if s.is_empty() or o2 == '(':
-                    s.push(char)
-                else:
-                    while not s.is_empty() and o2 in highest:
+            while s.size() > 0 and o2 != '(':
+                o2 = s.peek()
+                if char == '**':
+                    if op_prec[char] < op_prec[o2]:
                         post += ' ' + s.pop()
-                    s.push(char)
-            if char in medium:
-                if s.is_empty() or o2 == '(':
-                    s.push(char)
+                    else:
+                        break
+                elif op_prec[char] <= op_prec[o2]:
+                    post += ' ' + s.pop()
                 else:
-                    while not s.is_empty() and o2 not in low:
-                        post += ' ' + s.pop()
-                        if not s.is_empty():
-                            o2 = s.peek()
-                    s.push(char)
-            if char in low:
-                if s.is_empty() or o2 == '(':
-                    s.push(char)
-                else:
-                    while not s.is_empty():
-                        post += ' ' + s.pop()
-                    s.push(char)
+                    break
+            s.push(char)
         elif char == ')':
             o2 = s.peek()
             while o2 != '(':
                 post += ' ' + s.pop()
                 if not s.is_empty():
                         o2 = s.peek()
-                s.pop()
+            s.pop()
         else:
-            raise PostfixFormatException('Infix infinite loop?')
+            break
     while not s.is_empty():
         post += ' ' + s.pop()
     return post
@@ -146,5 +132,5 @@ def prefix_to_postfix(input_str):
             s.push(inf)
             i -= 1
         else:
-            raise PostfixFormatException('Prefix infinite loop?')
+            break
     return s.pop()
