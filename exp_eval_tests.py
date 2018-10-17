@@ -12,6 +12,8 @@ class test_expressions(unittest.TestCase):
         self.assertAlmostEqual(postfix_eval("3 2 **"), 9)
         self.assertAlmostEqual(postfix_eval('2 1 <<'), 4)
         self.assertAlmostEqual(postfix_eval('2 1 >>'), 1)
+        self.assertAlmostEqual(postfix_eval('12'), 12.0)
+        self.assertAlmostEqual(postfix_eval('12'), 12)
 
     def test_postfix_eval_simple_negative(self):
         self.assertAlmostEqual(postfix_eval("-3 5 +"), 2)
@@ -104,6 +106,11 @@ class test_expressions(unittest.TestCase):
         self.assertEqual(prefix_to_postfix("* - 3 / 2 1 - / 4 5 6"), "3 2 1 / - 4 5 / 6 - *")
         self.assertEqual(prefix_to_postfix('+ << 3 4 >> 5 6'), '3 4 << 5 6 >> +')
         self.assertEqual(prefix_to_postfix('** -1 2'), '-1 2 **')
+
+    def test_loop_breaks(self):
+        self.assertEqual(infix_to_postfix('e'),'')
+        with self.assertRaises(IndexError):
+            prefix_to_postfix('e')
 
 
 if __name__ == "__main__":
