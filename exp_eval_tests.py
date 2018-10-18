@@ -112,6 +112,10 @@ class test_expressions(unittest.TestCase):
         with self.assertRaises(IndexError):
             prefix_to_postfix('e')
 
+    def test_grader_failed_tests(self):
+        self.assertAlmostEqual(88243.62458440628, postfix_eval("2 38 1.2 * 3.6 1.8 .25 1.7 ** ** * 2 / 5 3 ** / + 23 1.1 2.2 ** / + 2.4 5 / - 1 - + 1.6 3 9 ** * 2.8 * 3 6.2 4 12.8 2 1.1 ** * 4.4 3.2 / - 1.1 5.2 7.7 ** / - ** / ** - +"))
+        self.assertEqual("2 38 1.2 * 3.6 1.8 .25 1.7 ** ** * 2 / 5 3 ** / + 23 1.1 2.2 ** / + 2.4 5 / - 1 - + 1.6 3 9 ** * 2.8 * 3 6.2 4 12.8 2 1.1 ** * 4.4 3.2 / - 1.1 5.2 7.7 ** / - ** / ** - +", infix_to_postfix("2 + ( ( 38 * 1.2 + 3.6 * 1.8 ** .25 ** 1.7 / 2 / 5 ** 3 + 23 / 1.1 ** 2.2 ) - 2.4 / 5 - 1 ) + ( 1.6 * 3 ** 9 * 2.8 - 3 ** ( 6.2 / 4 ** ( 12.8 * 2 ** 1.1 - 4.4 / 3.2 - 1.1 / 5.2 ** 7.7 ) ) )"))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -16,7 +16,6 @@ def postfix_eval(input_str):
     s = Stack(30)
     tokens = input_str.split( )
     operators = ['+', '-', '*', '/', '**', '<<', '>>']
-    nums = ['1','2','3','4','5','6','7','8','9','0']
     if input_str == '':
         return ''
     for char in tokens:
@@ -53,7 +52,7 @@ def postfix_eval(input_str):
                     raise PostfixFormatException('Illegal bit shift operand')
                 result = n1 >> n2
                 s.push(result)
-        elif char[0] in nums or (char[0] == '-' and len(char) > 1):
+        elif char.lstrip('-').replace('.','',1).isdigit():
             if '.' not in char:
                 s.push(int(char))
             else:
@@ -76,13 +75,12 @@ def infix_to_postfix(input_str):
     tokens = input_str.split( )
     op_prec = {'+': 1, '-': 1, '*': 2, '/': 2, '**': 3, '<<': 4, '>>': 4}
     operators = ['+','-','*','/','**','<<','>>']
-    nums = ['1','2','3','4','5','6','7','8','9','0']
     if input_str == '':
         return ''
     for char in tokens:
-        if post == '' and (char[0] in nums or (char[0] == '-' and len(char) > 1)):
+        if post == '' and char.lstrip('-').replace('.','',1).isdigit():
             post += char
-        elif char[0] in nums or (char[0] == '-' and len(char) > 1):
+        elif char.lstrip('-').replace('.','',1).isdigit():
             post += ' ' + char
         elif char == '(':
             s.push(char)
@@ -123,13 +121,11 @@ def prefix_to_postfix(input_str):
     tokens = input_str.split( )
     i = len(tokens) - 1
     operators = ['+','-','*','/','<<','>>','**']
-    nums = ['1','2','3','4','5','6','7','8','9','0']
     if input_str == '':
         return ''
     while i >= 0:
         char = tokens[i]
-        abs_char = tokens[i].lstrip('-')
-        if char[0] in nums or (char[0] == '-' and len(char) > 1):
+        if char.lstrip('-').replace('.','',1).isdigit():
             s.push(char)
             i -= 1
         elif char in operators:
