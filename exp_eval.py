@@ -17,8 +17,8 @@ def postfix_eval(input_str):
     tokens = input_str.split( )
     operators = ['+', '-', '*', '/', '**', '<<', '>>']
     nums = ['1','2','3','4','5','6','7','8','9','0']
-    if tokens == []:
-        raise PostfixFormatException('Invalid token')
+    if input_str == '':
+        return ''
     for char in tokens:
         if char in operators:
             try:
@@ -77,6 +77,8 @@ def infix_to_postfix(input_str):
     op_prec = {'+': 1, '-': 1, '*': 2, '/': 2, '**': 3, '<<': 4, '>>': 4}
     operators = ['+','-','*','/','**','<<','>>']
     nums = ['1','2','3','4','5','6','7','8','9','0']
+    if input_str == '':
+        return ''
     for char in tokens:
         if post == '' and (char[0] in nums or (char[0] == '-' and len(char) > 1)):
             post += char
@@ -122,6 +124,8 @@ def prefix_to_postfix(input_str):
     i = len(tokens) - 1
     operators = ['+','-','*','/','<<','>>','**']
     nums = ['1','2','3','4','5','6','7','8','9','0']
+    if input_str == '':
+        return ''
     while i >= 0:
         char = tokens[i]
         abs_char = tokens[i].lstrip('-')

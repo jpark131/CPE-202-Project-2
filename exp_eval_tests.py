@@ -12,6 +12,7 @@ class test_expressions(unittest.TestCase):
         self.assertAlmostEqual(postfix_eval("3 2 **"), 9)
         self.assertAlmostEqual(postfix_eval('2 1 <<'), 4)
         self.assertAlmostEqual(postfix_eval('2 1 >>'), 1)
+        self.assertAlmostEqual(postfix_eval(''), '')
 
     def test_postfix_eval_simple_negative(self):
         self.assertAlmostEqual(postfix_eval("-3 5 +"), 2)
@@ -54,8 +55,6 @@ class test_expressions(unittest.TestCase):
             self.assertEqual(str(e), "Invalid token")
         with self.assertRaises(PostfixFormatException):
             postfix_eval('3 4 e')
-        with self.assertRaises(PostfixFormatException):
-            postfix_eval('')
 
     def test_postfix_eval_insufficient_operands(self):
         try:
@@ -100,12 +99,14 @@ class test_expressions(unittest.TestCase):
         self.assertEqual(infix_to_postfix('1 + 1 + 1 + 1'), '1 1 + 1 + 1 +')
         self.assertEqual(infix_to_postfix('-1 * 1 * 1'), '-1 1 * 1 *')
         self.assertEqual(infix_to_postfix('2 * 2 * 3'),'2 2 * 3 *')
+        self.assertEqual(infix_to_postfix(''), '')
 
 
     def test_prefix_to_postfix(self):
         self.assertEqual(prefix_to_postfix("* - 3 / 2 1 - / 4 5 6"), "3 2 1 / - 4 5 / 6 - *")
         self.assertEqual(prefix_to_postfix('+ << 3 4 >> 5 6'), '3 4 << 5 6 >> +')
         self.assertEqual(prefix_to_postfix('** -1 2'), '-1 2 **')
+        self.assertEqual(prefix_to_postfix(''), '')
 
     def test_loop_break(self):
         with self.assertRaises(IndexError):
