@@ -1,5 +1,6 @@
-# p2-jpark131
+# CPE 202 Project 2
 p2-jpark131 created by GitHub Classroom
+
 exp_eval.py Contains the programs:
   1. postfix_eval evaluates a postfix expression
   2. infix_to_postfix converts an infix expression to postfix
